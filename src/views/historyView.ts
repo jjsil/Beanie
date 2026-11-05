@@ -140,15 +140,19 @@ function renderShotListItem(
   const recipeText = shotRecipeDisplay(shot, recipe);
   const date = shotDateShortLabel(shot.timestamp);
   const freshness = shotFreshnessBadgeForShot(shot, batchForShotFreshness(shot, batchesByBean));
+  // Both lines ellipsize in the narrow list column; the title keeps the full
+  // text reachable on hover.
+  const recipeLine = `${recipeText}${duration ? ` @ ${duration}` : ''}`;
+  const profileLine = [freshness, recipe.profileTitle ?? 'No profile', date].filter(Boolean).join(' · ');
   const html = `
     <button id="shot-${escapeAttr(shot.id)}" class="shot-item ${active ? 'active' : ''} ${comparing ? 'comparing' : ''} ${isDerekedShot(shot) ? 'dereked' : ''} ${hint ? 'has-second-tap-hint' : ''}" data-action="select-history-shot" data-id="${escapeAttr(shot.id)}">
       <span class="shot-item-info">
-        <span class="shot-item-recipe">${escapeHtml(recipeText)}${duration ? ` @ ${escapeHtml(duration)}` : ''}</span>
+        <span class="shot-item-recipe" title="${escapeAttr(recipeLine)}">${escapeHtml(recipeLine)}</span>
         ${isDerekedShot(shot) ? `<span class="derek-shot-mark" title="Has Derek dial-in notes">${icon('sparkles')}</span>` : ''}
         ${comparing ? '<span class="compare-badge">overlay</span>' : ''}
         ${enjoymentBadge(shot)}
       </span>
-      <span class="shot-item-profile">${escapeHtml([freshness, recipe.profileTitle ?? 'No profile', date].filter(Boolean).join(' · '))}</span>
+      <span class="shot-item-profile" title="${escapeAttr(profileLine)}">${escapeHtml(profileLine)}</span>
       ${hint}
     </button>
   `;

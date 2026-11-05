@@ -1230,6 +1230,11 @@ p {
 
 .shot-list {
   display: grid;
+  /* An implicit `auto` column is sized to the widest row's min-content, and the
+     nowrap recipe/profile lines make that the full text width. Pin the column to
+     the list's own width so long text ellipsizes instead of running under the
+     shot graph. */
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: 0;
   padding: 0;
