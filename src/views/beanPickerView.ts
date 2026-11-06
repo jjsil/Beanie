@@ -1,4 +1,5 @@
 import type { Bean, BeanBatch } from '../api/types';
+import { formatShortDate } from '../domain/dateFormat';
 import {
   batchStorageEvents,
   batchStorageState,
@@ -317,7 +318,7 @@ function renderStockRowActions(
 function stockRowDate(batch: BeanBatch): string {
   const roast = batch.roastDate ? new Date(batch.roastDate) : null;
   return roast && !Number.isNaN(roast.valueOf())
-    ? roast.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    ? formatShortDate(roast)
     : 'Undated';
 }
 

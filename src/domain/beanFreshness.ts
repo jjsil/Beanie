@@ -5,6 +5,7 @@ import type {
   BeanFreshnessSnapshot,
   ShotSummary
 } from '../api/types';
+import { formatShortDate } from './dateFormat';
 
 const DAY_MS = 86_400_000;
 
@@ -111,7 +112,7 @@ export function computeBeanFreshness(
       thawedAt: interval.thawedAt ?? null
     })),
     thawedAt,
-    dateText: roast.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    dateText: formatShortDate(roast)
   };
 }
 
@@ -306,7 +307,7 @@ function shortRelativeDate(value: string, now: Date): string {
   if (days <= 0) return 'today';
   if (days === 1) return '1d ago';
   if (days < 14) return `${days}d ago`;
-  return at.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return formatShortDate(at);
 }
 
 function dateInputToIso(value: string, previousIso: string, fallback: Date): string {

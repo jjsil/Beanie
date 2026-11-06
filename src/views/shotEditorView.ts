@@ -1,5 +1,6 @@
 import type { Bean, BeanBatch, Grinder, ShotRecord } from '../api/types';
 import { batchOptionLabel } from '../domain/beanDisplay';
+import { formatShortDateTime } from '../domain/dateFormat';
 import { beanLabel } from '../domain/beanWorkflow';
 import {
   batchAndBeanForId,
@@ -57,12 +58,7 @@ export function renderShotEditor(input: ShotEditorViewInput): string {
   const shotDate = new Date(input.shot.timestamp);
   const shotLabel = Number.isNaN(shotDate.valueOf())
     ? input.shot.timestamp
-    : shotDate.toLocaleString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    : formatShortDateTime(shotDate);
   const batch = batchAndBeanForId(
     draft.beanBatchId,
     input.beans,

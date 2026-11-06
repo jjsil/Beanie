@@ -14,6 +14,7 @@ import {
   type UIScalePreference,
   type WakeAppZonePosition
 } from './domain/settings';
+import { formatHourMinute } from './domain/dateFormat';
 import { waterTankMlFromMm } from './domain/waterTank';
 import {
   draftRecipeFingerprint,
@@ -134,13 +135,9 @@ export function machineStatus(machine: MachineSnapshot | null, loading: boolean)
  * webviews don't surface the system's 24-hour switch to the locale.
  */
 export function clockLabel(date: Date, format: ClockFormat = 'auto'): string {
-  if (format === '24h') {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
-  }
-  if (format === '12h') {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-  }
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (format === '24h') return formatHourMinute(date, 24);
+  if (format === '12h') return formatHourMinute(date, 12);
+  return formatHourMinute(date);
 }
 
 export type MachineStatusTone = 'ready' | 'heating' | 'active' | 'asleep' | 'alert' | '';

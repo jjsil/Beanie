@@ -10,6 +10,7 @@ import type {
   Workflow,
   WorkflowContext
 } from '../api/types';
+import { formatShortDate } from './dateFormat';
 import { isServiceBeverageType } from './shotRecord';
 
 export {
@@ -376,5 +377,5 @@ function stringOrNull(value: unknown): string | null {
 function shortDate(value: string): string {
   const d = new Date(value);
   if (Number.isNaN(d.valueOf())) return value;
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return formatShortDate(d);
 }

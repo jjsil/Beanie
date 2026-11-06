@@ -1,5 +1,6 @@
 import { STEAM_PURGE_MODES } from '../api/settings';
 import { CLEANING_THRESHOLD_OPTIONS } from '../domain/cleaning';
+import { formatShortDate } from '../domain/dateFormat';
 import type { HotWaterStopMode } from '../domain/machinePreferences';
 import type { NumberSpec } from '../domain/waterSettings';
 import { icon } from '../components/icons';
@@ -166,7 +167,7 @@ export function renderMachineProgressPage(model: MachineProgressViewModel): stri
 function cleaningDateLabel(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.valueOf())) return iso;
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return formatShortDate(date);
 }
 
 function renderMachineLane(options: MachineLaneOptions): string {
