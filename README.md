@@ -18,6 +18,12 @@ instead of messier.
 
 Beanie is still early, so feedback is very welcome.
 
+> **This is a fork** of [giladger/Beanie](https://github.com/giladger/Beanie),
+> kept in sync with upstream. Fork releases are tagged `vX.Y.Z-jj.N`, where
+> `X.Y.Z` is the upstream version they are built on. The fork installs with the
+> same skin id (`beanie`), so it replaces upstream Beanie on the tablet and keeps
+> its data.
+
 ## What Beanie Does
 
 1. Opens on the last active bean and its current recipe.
@@ -37,10 +43,12 @@ http://localhost:8080/api/v1/plugins/settings.reaplugin/ui
 In the Web Interface settings, install from GitHub using:
 
 ```text
-giladger/Beanie
+jjsil/Beanie
 ```
 
 Decent.app will fetch the latest Beanie GitHub release and install the skin.
+Installing it over upstream Beanie switches future automatic updates to this
+fork; reinstall from `giladger/Beanie` to go back.
 
 ## Development
 
@@ -98,7 +106,7 @@ npm run skin:shim:zip:lan # build + serve a shim zip to a trusted-LAN device
 npm run skin:deploy     # build and copy the static skin into Decent.app
 npm run preview         # preview dist on 127.0.0.1
 npm run preview:lan     # expose the production preview to the trusted LAN
-npm run release         # tag and push the next patch release
+npm run release         # tag and push the next fork release (vX.Y.Z-jj.N)
 npm run release:zip     # build the installable release zip
 ```
 
@@ -115,7 +123,7 @@ npm run dev:lan         # in another terminal, so the tablet can reach Vite
 
 In Decent.app's skin installer, paste the printed
 `http://<lan-ip>:5180/beanie-shim.zip` into the **source field** — the same box
-you'd normally type `giladger/Beanie` into. Decent fetches and unpacks the zip
+you'd normally type `jjsil/Beanie` into. Decent fetches and unpacks the zip
 itself (`POST /api/v1/webui/skins/install/url`), so this needs no debug build and
 no `adb`; the machine just has to be able to reach your Vite host over the LAN.
 The QR only helps you copy the URL onto the tablet. Keep the server running
