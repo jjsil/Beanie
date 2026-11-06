@@ -8,6 +8,12 @@ const allowDirty = args.has('--allow-dirty');
 const remote = optionValue('--remote') ?? 'origin';
 const tagPattern = /^v(\d+)\.(\d+)\.(\d+)$/;
 
+// Optional fork release suffix from package.json `releaseTagSuffix` (e.g. "jj").
+// When set, releases are tagged `vX.Y.Z-<suffix>.N`: X.Y.Z is the upstream base
+// version the fork is built on, N counts fork releases on that base. Without it,
+// releases keep the plain `vX.Y.Z` patch-bump scheme.
+const tagSuffix = readTagSuffix();
+
 main();
 
 function main() {
@@ -19,24 +25,7 @@ function main() {
   fetchTags(remote);
   assertReleaseBranch(remote);
 
-  const tags = semverTags();
-  const latest = tags.at(-1) ?? null;
-
-  const requested = requestedVersion();
-  let next;
-  if (requested) {
-    // Explicit version wins over the default patch bump — use it for minor/major
-    // releases (e.g. `npm run release -- 0.3.0`).
-    next = `v${requested.major}.${requested.minor}.${requested.patch}`;
-    if (latest && !isGreater(requested, latest)) {
-      fail(`${next} is not greater than the latest tag ${latest.tag}.`);
-    }
-  } else {
-    if (!latest) {
-      fail('No existing vX.Y.Z tags found. Pass an explicit version, e.g. --version=0.1.0.');
-    }
-    next = `v${latest.major}.${latest.minor}.${latest.patch + 1}`;
-  }
+  const { next, latest } = tagSuffix ? nextSuffixedTag(tagSuffix) : nextPlainTag();
   assertTagMissing(next, remote);
 
   if (dryRun) {
@@ -65,6 +54,91 @@ function main() {
   git(['tag', '-a', next, '-m', `Release ${next}`]);
   git(['push', '--atomic', remote, 'HEAD', next]);
   console.log(`ok - bumped project version, committed, tagged, and pushed ${next}`);
+}
+
+function nextPlainTag() {
+  const latest = semverTags().at(-1) ?? null;
+  const requested = requestedVersion();
+  if (requested) {
+    // Explicit version wins over the default patch bump — use it for minor/major
+    // releases (e.g. `npm run release -- 0.3.0`).
+    const next = `v${requested.major}.${requested.minor}.${requested.patch}`;
+    if (latest && !isGreater(requested, latest)) {
+      fail(`${next} is not greater than the latest tag ${latest.tag}.`);
+    }
+    return { next, latest };
+  }
+  if (!latest) {
+    fail('No existing vX.Y.Z tags found. Pass an explicit version, e.g. --version=0.1.0.');
+  }
+  return { next: `v${latest.major}.${latest.minor}.${latest.patch + 1}`, latest };
+}
+
+// The base defaults to package.json's version with any fork suffix stripped, so
+// after merging an upstream release the next fork tag starts at `-<suffix>.1`
+// on the new base. An explicit X.Y.Z overrides the base.
+function nextSuffixedTag(suffix) {
+  const tags = suffixedTags(suffix);
+  const latest = tags.at(-1) ?? null;
+  const base = requestedVersion() ?? packageBaseVersion(suffix);
+  const onBase = tags.filter((tag) => compareBase(tag, base) === 0);
+  const counter = (onBase.at(-1)?.counter ?? 0) + 1;
+  const candidate = { ...base, counter };
+  const next = `v${base.major}.${base.minor}.${base.patch}-${suffix}.${counter}`;
+  if (latest && compareSuffixed(candidate, latest) <= 0) {
+    fail(`${next} is not greater than the latest tag ${latest.tag}.`);
+  }
+  return { next, latest };
+}
+
+function readTagSuffix() {
+  let pkg;
+  try {
+    pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  } catch {
+    return null;
+  }
+  const suffix = pkg.releaseTagSuffix;
+  if (suffix == null || suffix === '') return null;
+  if (typeof suffix !== 'string' || !/^[a-z][a-z0-9]*$/.test(suffix)) {
+    fail(`package.json releaseTagSuffix "${suffix}" must be lowercase letters and digits, starting with a letter.`);
+  }
+  return suffix;
+}
+
+function packageBaseVersion(suffix) {
+  const version = JSON.parse(readFileSync('package.json', 'utf8')).version;
+  const match = String(version).match(new RegExp(`^(\\d+)\\.(\\d+)\\.(\\d+)(?:-${escapeRegExp(suffix)}\\.\\d+)?$`));
+  if (!match) fail(`package.json version "${version}" is not X.Y.Z or X.Y.Z-${suffix}.N.`);
+  return { major: Number(match[1]), minor: Number(match[2]), patch: Number(match[3]) };
+}
+
+function suffixedTags(suffix) {
+  const pattern = new RegExp(`^v(\\d+)\\.(\\d+)\\.(\\d+)-${escapeRegExp(suffix)}\\.(\\d+)$`);
+  return git(['tag', '--list', 'v*'], { silent: true })
+    .split('\n')
+    .map((tag) => tag.trim())
+    .map((tag) => {
+      const match = tag.match(pattern);
+      if (!match) return null;
+      return {
+        tag,
+        major: Number(match[1]),
+        minor: Number(match[2]),
+        patch: Number(match[3]),
+        counter: Number(match[4])
+      };
+    })
+    .filter(Boolean)
+    .sort(compareSuffixed);
+}
+
+function compareBase(a, b) {
+  return a.major - b.major || a.minor - b.minor || a.patch - b.patch;
+}
+
+function compareSuffixed(a, b) {
+  return compareBase(a, b) || a.counter - b.counter;
 }
 
 function assertReleaseNotes(tag) {

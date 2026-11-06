@@ -102,6 +102,52 @@ run('validated release commits, tags, and atomically pushes the branch and tag',
   });
 });
 
+run('fork suffix starts at -<suffix>.1 on the package base and ignores plain upstream tags', () => {
+  withFixture(({ root, env }) => {
+    const result = invoke(root, { ...env, MOCK_GIT_TAGS: 'v0.3.0,v0.3.5' }, ['--dry-run']);
+
+    equal(result.status, 0);
+    includes(result.stdout, 'would bump project version to 0.3.0-jj.1');
+  }, { tagSuffix: 'jj' });
+});
+
+run('fork suffix bumps the counter, then commits, tags, and pushes the suffixed release', () => {
+  withFixture(({ root, logPath, env }) => {
+    const result = invoke(root, { ...env, MOCK_GIT_TAGS: 'v0.3.0,v0.3.0-jj.1,v0.3.0-jj.2' }, []);
+
+    equal(result.status, 0);
+    equal(readVersion(root, 'package.json'), '0.3.0-jj.3');
+    equal(readVersion(root, 'package-lock.json'), '0.3.0-jj.3');
+    equal(readVersion(root, 'public/manifest.json'), '0.3.0-jj.3');
+    deepEqual(
+      readLog(logPath).filter(isMutatingGitCommand).map((entry) => entry.args).slice(-2),
+      [
+        ['tag', '-a', 'v0.3.0-jj.3', '-m', 'Release v0.3.0-jj.3'],
+        ['push', '--atomic', 'origin', 'HEAD', 'v0.3.0-jj.3']
+      ]
+    );
+  }, { tagSuffix: 'jj', version: '0.3.0-jj.2', changelogTag: 'v0.3.0-jj.3' });
+});
+
+run('fork suffix restarts the counter after an upstream version is merged', () => {
+  withFixture(({ root, env }) => {
+    const result = invoke(root, { ...env, MOCK_GIT_TAGS: 'v0.3.0-jj.1,v0.3.0-jj.2' }, ['--dry-run']);
+
+    equal(result.status, 0);
+    includes(result.stdout, 'would bump project version to 0.3.1-jj.1');
+  }, { tagSuffix: 'jj', version: '0.3.1' });
+});
+
+run('fork suffix refuses an explicit base older than the latest fork tag', () => {
+  withFixture(({ root, logPath, env }) => {
+    const result = invoke(root, { ...env, MOCK_GIT_TAGS: 'v0.3.1-jj.1' }, ['--dry-run', '0.3.0']);
+
+    equal(result.status, 1);
+    includes(result.stderr, 'v0.3.0-jj.1 is not greater than the latest tag v0.3.1-jj.1.');
+    equal(readLog(logPath).some(isMutatingGitCommand), false);
+  }, { tagSuffix: 'jj', version: '0.3.1-jj.1' });
+});
+
 interface CommandLog {
   command: 'git' | 'npm';
   args: string[];
@@ -113,22 +159,36 @@ interface Fixture {
   env: NodeJS.ProcessEnv;
 }
 
-function withFixture(test: (fixture: Fixture) => void): void {
+interface FixtureOptions {
+  version?: string;
+  tagSuffix?: string;
+  changelogTag?: string;
+}
+
+function withFixture(test: (fixture: Fixture) => void, options: FixtureOptions = {}): void {
   const root = mkdtempSync(join(tmpdir(), 'beanie-release-tag-'));
   const bin = join(root, 'bin');
   const logPath = join(root, 'commands.jsonl');
   mkdirSync(bin);
   mkdirSync(join(root, 'public'));
 
-  writeJson(join(root, 'package.json'), { name: 'beanie-test', version: '0.3.0' });
+  const version = options.version ?? '0.3.0';
+  writeJson(join(root, 'package.json'), {
+    name: 'beanie-test',
+    version,
+    ...(options.tagSuffix ? { releaseTagSuffix: options.tagSuffix } : {})
+  });
   writeJson(join(root, 'package-lock.json'), {
     name: 'beanie-test',
-    version: '0.3.0',
+    version,
     lockfileVersion: 3,
-    packages: { '': { name: 'beanie-test', version: '0.3.0' } }
+    packages: { '': { name: 'beanie-test', version } }
   });
-  writeJson(join(root, 'public/manifest.json'), { id: 'beanie', version: '0.3.0' });
-  writeFileSync(join(root, 'CHANGELOG.md'), '# Changelog\n\n## v0.3.1 - 2026-07-11\n\n- Tested release.\n');
+  writeJson(join(root, 'public/manifest.json'), { id: 'beanie', version });
+  writeFileSync(
+    join(root, 'CHANGELOG.md'),
+    `# Changelog\n\n## ${options.changelogTag ?? 'v0.3.1'} - 2026-07-11\n\n- Tested release.\n`
+  );
 
   writeExecutable(
     join(bin, 'git'),
@@ -138,7 +198,7 @@ const args = process.argv.slice(2);
 appendFileSync(process.env.MOCK_COMMAND_LOG, JSON.stringify({ command: 'git', args }) + '\n');
 if (args[0] === 'rev-parse') process.stdout.write('true\n');
 if (args[0] === 'status' && process.env.MOCK_GIT_DIRTY) process.stdout.write(' M src/app.ts\n');
-if (args[0] === 'tag' && args[1] === '--list' && args[2] === 'v*') process.stdout.write('v0.3.0\n');
+if (args[0] === 'tag' && args[1] === '--list' && args[2] === 'v*') process.stdout.write((process.env.MOCK_GIT_TAGS || 'v0.3.0').split(',').join('\n') + '\n');
 if (args[0] === 'branch' && args[1] === '--show-current') process.stdout.write((process.env.MOCK_GIT_BRANCH || 'main') + '\n');
 if (args[0] === 'rev-list' && args[1] === '--count') process.stdout.write((process.env.MOCK_GIT_BEHIND || '0') + '\n');
 `
