@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.10-jj.1 - 2026-11-07
+
+- Long shot-list rows no longer run under the shot graph. A shot with a long
+  recipe or profile line used to widen the whole shot list, so every row
+  spilled under the graph beside it and the enjoyment badges were pushed out of
+  view. Rows now stay inside the list and cut long text off with an ellipsis;
+  hover a row to see its full recipe and profile.
+
 ## v0.3.10 - 2026-10-28
 
 - Shot ratings work again on Decaid 0.8.7 and later. Decaid moved shot
