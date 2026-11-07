@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.10-jj.2 - 2026-11-07
+
+- On a DE1 without a group head controller, steam, hot water and flush now
+  start by tapping the big icon in their section of the Steam · Water · Flush
+  screen. Each section used to show a small Start button next to a large icon
+  that did nothing when tapped. The Start buttons are gone and the icons are
+  now the start controls, tinted to show they can be tapped. On a machine
+  with a group head controller the icons stay decorative and flows start from
+  the group head as before.
+
 ## v0.3.10-jj.1 - 2026-11-07
 
 - Long shot-list rows no longer run under the shot graph. A shot with a long
