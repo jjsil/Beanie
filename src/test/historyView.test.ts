@@ -245,6 +245,31 @@ run('history view surfaces the Decent upload fact only for marked shots', () => 
   excludes(plainHtml, 'shot-upload-mark');
 });
 
+run('history list rows carry their full text as a title so ellipsized lines stay readable', () => {
+  const longTitle = 'Adaptive Blooming Allongé "Turbo" <v4.2> & friends';
+  const long = { ...shot('shot-long', 'espresso'), workflow: { ...shot('shot-long', 'espresso').workflow, profile: { title: longTitle, beverage_type: 'espresso' } } };
+  const html = renderHistoryView({
+    shots: [long],
+    detailShotId: null,
+    compareShotId: null,
+    comparePicking: false,
+    demo: false,
+    shotsTotal: 1,
+    shotsLoadingMore: false,
+    secondTapHint: null,
+    batchesByBean: {}
+  });
+
+  const profile = /<span class="shot-item-profile" title="([^"]*)">([^<]*)<\/span>/.exec(html);
+  if (!profile) throw new Error('Expected a titled .shot-item-profile line');
+  equal(profile[1], profile[2]);
+  includes(profile[1], 'Adaptive Blooming Allongé &quot;Turbo&quot; &lt;v4.2&gt; &amp; friends');
+
+  const recipe = /<span class="shot-item-recipe" title="([^"]*)">([^<]*)<\/span>/.exec(html);
+  if (!recipe) throw new Error('Expected a titled .shot-item-recipe line');
+  includes(recipe[1], ' @ ');
+});
+
 run('selectedHistoryShot skips service shots and falls back to the first visible shot', () => {
   equal(selectedHistoryShot([shot('steam-shot', 'steam'), shot('shot-a', 'espresso')], 'steam-shot')?.id, 'shot-a');
   equal(selectedHistoryShot([shot('steam-shot', 'steam')], null), null);
