@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.10-jj.3 - 2026-11-07
+
+- jjsil's Beanie now installs as its own skin instead of replacing Beanie.
+  Decaid ships the original Beanie built in and reinstalls it whenever it
+  starts or checks for updates, so the fork kept being swapped back for the
+  original and never received its own updates. It now appears as a separate
+  "jjsil's Beanie" entry next to Beanie and updates from this fork. Install it
+  once more from `jjsil/Beanie` and pick it as the default skin. Beans, shots
+  and Beanie settings carry over; the theme, the Gemini API key and the "scan
+  on this device" choice are kept per skin, so set those again once.
+
 ## v0.3.10-jj.2 - 2026-11-07
 
 - On a DE1 without a group head controller, steam, hot water and flush now
