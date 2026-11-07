@@ -42,13 +42,14 @@ run('machine page renders lane presets, rename actions, graphics, and value tile
   includes(html, 'data-action="machine-edit-value"');
   includes(html, 'Missing hardware');
   includes(html, 'Two tap stop');
-  includes(html, 'machine-lane-start');
+  includes(html, 'machine-graphic machine-graphic-start');
+  excludes(html, '<span>Start</span>');
   includes(html, 'data-action="machine-command"');
   includes(html, 'data-value="steam"');
   includes(html, 'aria-label="Start steam"');
 });
 
-run('machine page hides lane start buttons when the GHC does that job', () => {
+run('machine page leaves the lane graphic inert when the GHC does that job', () => {
   const html = renderMachinePage({
     headerHtml: '<header>Machine</header>',
     cleaningBarHtml: '',
@@ -67,7 +68,8 @@ run('machine page hides lane start buttons when the GHC does that job', () => {
     ]
   });
 
-  excludes(html, 'machine-lane-start');
+  excludes(html, 'machine-graphic-start');
+  includes(html, 'class="machine-graphic" aria-hidden="true"');
   excludes(html, 'data-action="machine-command"');
 });
 
