@@ -3,7 +3,7 @@ import path from 'node:path';
 
 export const defaultSkinDir = path.join(
   os.homedir(),
-  'Library/Containers/net.tadel.reaprime/Data/Documents/web-ui/beanie'
+  'Library/Containers/net.tadel.reaprime/Data/Documents/web-ui/jjsil-beanie'
 );
 
 export function resolveSkinDir() {

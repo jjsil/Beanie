@@ -21,8 +21,8 @@
 //   SHIM_ZIP_PORT     port to serve the zip on (default 5180)
 //   SHIM_ZIP_OUT      output zip path (default ./beanie-shim.zip)
 //   SHIM_SKIN_ID      skin id to install as (default: "<manifest id>-dev", e.g.
-//                     beanie-dev). The "-dev" id makes the shim its own entry in
-//                     the skin list. Set it to the release id (beanie) to
+//                     jjsil-beanie-dev). The "-dev" id makes the shim its own entry in
+//                     the skin list. Set it to the release id (jjsil-beanie) to
 //                     overwrite the release in place instead.
 //   SHIM_SKIN_NAME    skin display name (default: "<manifest name> (dev)")
 

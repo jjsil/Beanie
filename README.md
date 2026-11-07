@@ -20,9 +20,9 @@ Beanie is still early, so feedback is very welcome.
 
 > **This is a fork** of [giladger/Beanie](https://github.com/giladger/Beanie),
 > kept in sync with upstream. Fork releases are tagged `vX.Y.Z-jj.N`, where
-> `X.Y.Z` is the upstream version they are built on. The fork installs with the
-> same skin id (`beanie`), so it replaces upstream Beanie on the tablet and keeps
-> its data.
+> `X.Y.Z` is the upstream version they are built on. The fork installs as its own
+> skin, **jjsil's Beanie** (id `jjsil-beanie`), next to upstream Beanie, which
+> Decaid ships built in. Both read the same beans, shots and Beanie settings.
 
 ## What Beanie Does
 
@@ -47,8 +47,8 @@ jjsil/Beanie
 ```
 
 Decent.app will fetch the latest Beanie GitHub release and install the skin.
-Installing it over upstream Beanie switches future automatic updates to this
-fork; reinstall from `giladger/Beanie` to go back.
+It installs as **jjsil's Beanie**, next to the built-in upstream Beanie; pick it
+as the default skin. Decaid's update check keeps it updated from this repo.
 
 ## Development
 
@@ -134,9 +134,9 @@ beans/shots *data import*, not a skin installer.
 
 The shim only carries `index.html` + `manifest.json`; all modules load from your
 machine's Vite server, so `src/*` edits hot-reload on the device. By default it
-installs as its own entry — id `beanie-dev`, shown as **jjsil's Beanie (dev)** — so it
+installs as its own entry — id `jjsil-beanie-dev`, shown as **jjsil's Beanie (dev)** — so it
 sits alongside the release rather than replacing it; pick it from the skin list.
-Set `SHIM_SKIN_ID=beanie` to overwrite the release in place instead.
+Set `SHIM_SKIN_ID=jjsil-beanie` to overwrite the release in place instead.
 
 `dev:lan`, `preview:lan`, and `skin:shim:zip:lan` listen on every interface.
 They have no production authentication boundary: do not expose them through a
@@ -153,10 +153,10 @@ Pass `--no-serve` to only write the zip. To remove a shim skin later:
 The default Decent skin folder is:
 
 ```text
-~/Library/Containers/net.tadel.reaprime/Data/Documents/web-ui/beanie
+~/Library/Containers/net.tadel.reaprime/Data/Documents/web-ui/jjsil-beanie
 ```
 
-Override it with `DECENT_SKIN_DIR=/path/to/beanie`.
+Override it with `DECENT_SKIN_DIR=/path/to/jjsil-beanie`.
 
 ### Runtime data and privacy
 

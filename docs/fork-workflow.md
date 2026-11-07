@@ -18,7 +18,7 @@ local tags, and upstream's `vX.Y.Z` would otherwise collide with fork releases.
 
 ## Where commits go
 
-- **Fork-only changes** — manifest `author`/`repository`, README fork notes,
+- **Fork-only changes** — manifest `id`/`name`/`author`/`repository`, README fork notes,
   `releaseTagSuffix`, fork release commits, this file: commit on `main`. Keep
   them small and separate so they never mix with upstreamable work.
 - **Anything that could become an upstream PR** — branch from `upstream/main`:
@@ -50,7 +50,7 @@ Conflicts to expect, all mechanical:
 |---|---|
 | `version` in package.json, package-lock.json, public/manifest.json | Take upstream's plain `X.Y.Z`; the next fork release re-adds the suffix. |
 | Top of CHANGELOG.md | Keep both; our `## vX.Y.Z-jj.N` sections go above upstream's. |
-| manifest `author`/`repository`, README fork notes | Keep ours. |
+| manifest `id`/`name`/`author`/`repository`, README fork notes | Keep ours. |
 
 If upstream squash-merged one of our PRs, resolve its conflicts by taking
 upstream's version.
@@ -71,8 +71,19 @@ GitHub release that Decaid installs from.
 
 ## Skin identity
 
-The skin id stays `beanie`. Decaid installs a skin into `web-ui/<id>`, so the
-fork replaces upstream Beanie on the tablet and keeps its data: browser storage
-is per skin id (each id gets its own stable port), and the gateway store
-namespace stays `beanie`. Decaid then updates the skin from whichever repo
-installed it last, so reinstalling from `giladger/Beanie` switches back.
+The fork's skin id is `jjsil-beanie` (manifest `id`), not upstream's `beanie`.
+Decaid ships upstream Beanie as a built-in skin: `giladger/Beanie` is listed in
+its `skin_sources.json`, and Decaid reinstalls every listed release at each
+launch and update check. A fork that reused the id `beanie` would be overwritten
+by upstream every time, and would never be updated from this repo. With its own
+id, the fork installs next to upstream Beanie and updates from `jjsil/Beanie`.
+
+The gateway settings namespace deliberately stays `beanie`
+(`SETTINGS_STORE_NAMESPACE` and the namespace in `src/domain/storage.ts`), so
+the fork and upstream Beanie share the same synced settings, alongside the
+beans and shots in Decaid's database. Settings keys added only in the fork must
+use names upstream doesn't use.
+
+Browser storage (theme, Gemini API key, "scan on this device", the IndexedDB
+cache) is separate per skin: Decaid gives each skin id its own stable port, so
+each skin has its own origin.
