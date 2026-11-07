@@ -134,7 +134,7 @@ beans/shots *data import*, not a skin installer.
 
 The shim only carries `index.html` + `manifest.json`; all modules load from your
 machine's Vite server, so `src/*` edits hot-reload on the device. By default it
-installs as its own entry — id `beanie-dev`, shown as **Beanie (dev)** — so it
+installs as its own entry — id `beanie-dev`, shown as **jjsil's Beanie (dev)** — so it
 sits alongside the release rather than replacing it; pick it from the skin list.
 Set `SHIM_SKIN_ID=beanie` to overwrite the release in place instead.
 
