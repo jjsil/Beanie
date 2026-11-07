@@ -7936,27 +7936,6 @@ p {
   gap: 10px;
 }
 
-.machine-lane-start {
-  flex: 0 0 auto;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 14px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.machine-lane-start .icon {
-  width: 15px;
-  height: 15px;
-}
-
 .machine-lane-title h2 {
   margin: 2px 0 0;
   color: var(--ink);
@@ -7975,6 +7954,24 @@ p {
   display: grid;
   place-items: center;
   padding: 12px;
+}
+
+.machine-graphic-start {
+  width: 100%;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel-2));
+  color: var(--accent);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.machine-graphic-start:active:not(:disabled) {
+  transform: scale(0.98);
+  background: color-mix(in srgb, var(--accent) 24%, var(--panel-2));
+}
+
+.machine-graphic-start:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .machine-graphic-streamline {
