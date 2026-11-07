@@ -11,6 +11,7 @@
 // own precedence when both are present.
 
 import type { ShotSummary } from '../api/types';
+import { formatShortDateTime } from './dateFormat';
 
 export type DecentUploadFact =
   | { kind: 'uploaded'; at: Date | null }
@@ -57,5 +58,5 @@ function markerDate(value: unknown): Date | null {
 }
 
 function formatMarkerDate(date: Date): string {
-  return date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return formatShortDateTime(date);
 }

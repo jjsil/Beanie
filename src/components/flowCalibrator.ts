@@ -1,4 +1,5 @@
 import type { ShotRecord } from '../api/types';
+import { formatShortDateTime } from '../domain/dateFormat';
 import { escapeAttr, escapeHtml } from './html';
 import { icon } from './icons';
 import {
@@ -224,10 +225,5 @@ function numberFrom(record: Record<string, unknown> | null | undefined, key: str
 function dateLabel(value: string): string {
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return value;
-  return new Date(timestamp).toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  return formatShortDateTime(new Date(timestamp));
 }

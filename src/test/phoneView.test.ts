@@ -1,4 +1,5 @@
 import type { Bean, BeanBatch, ShotRecord } from '../api/types';
+import { withDateFormatContext } from '../domain/dateFormat';
 import { renderPhoneShell, type PhoneShellModel } from '../views/phoneView';
 
 run('phone shell exposes helper workflows without machine service controls', () => {
@@ -81,7 +82,9 @@ run('phone shots render selected shot as an accordion below the row', () => {
 });
 
 run('phone shot rows show computed age for unstamped shots', () => {
-  const html = renderPhoneShell({ ...model(), activeTab: 'shots' });
+  const html = withDateFormatContext({ locale: 'en-US', timeZone: 'UTC' }, () =>
+    renderPhoneShell({ ...model(), activeTab: 'shots' })
+  );
 
   includes(html, '4d · Profile shot-1 · Jun 5');
   includes(html, '4d · Profile shot-1 · 1:2.2 · Jun 5');

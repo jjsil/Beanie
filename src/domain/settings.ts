@@ -1,4 +1,5 @@
 import type { MachineSnapshot, ScaleSnapshot } from '../api/types';
+import { formatDateTimeWithYear } from './dateFormat';
 import { FLOW_CALIBRATION_STORAGE_KEYS } from './flowCalibration';
 import {
   clockFormatKey,
@@ -287,13 +288,7 @@ function formatBuildTime(value: string): string {
   const parsed = new Date(value);
   return Number.isNaN(parsed.valueOf())
     ? value
-    : parsed.toLocaleString([], {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    : formatDateTimeWithYear(parsed);
 }
 
 function readLocalTheme(): ThemePreference {

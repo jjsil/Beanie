@@ -3,6 +3,7 @@ import { escapeAttr, escapeHtml } from '../components/html';
 import { icon } from '../components/icons';
 import { profileStepTargets, type ProfileStepTarget } from '../components/profilePreview';
 import { renderAnswerMarkdown } from '../domain/answerMarkdown';
+import { formatShortDate } from '../domain/dateFormat';
 import { TASTE_CHIPS, suggestionTitle, type DialInSuggestion } from '../domain/dialIn';
 import {
   canAskDerek,
@@ -179,7 +180,7 @@ function renderAnswer(state: DerekState, previews?: ReadonlyArray<string | null>
 function savedAtLabel(at: string): string {
   const time = Date.parse(at);
   if (!Number.isFinite(time)) return '';
-  return new Date(time).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return formatShortDate(new Date(time));
 }
 
 function renderSuggestions(state: DerekState, previews?: ReadonlyArray<string | null>): string {

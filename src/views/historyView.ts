@@ -8,6 +8,7 @@ import {
   recipeFromShot,
   shotFreshnessBadgeForShot
 } from '../domain/beanWorkflow';
+import { formatShortDate } from '../domain/dateFormat';
 import { isDerekedShot } from '../domain/derekShot';
 import { isServiceShot } from '../domain/shotRecord';
 import { decentUploadFact, decentUploadTitle } from '../domain/shotUpload';
@@ -332,7 +333,7 @@ function shotYieldDisplay(shot: ShotRecord, fallbackYield: number | null | undef
 function shotDateShortLabel(timestamp: string): string | null {
   const date = new Date(timestamp);
   if (Number.isNaN(date.valueOf())) return null;
-  return date.toLocaleString([], { month: 'short', day: 'numeric' });
+  return formatShortDate(date);
 }
 
 // Full-size replay of a saved shot in the live-shot layout: the shot's facts

@@ -12,6 +12,7 @@ import {
   shotFreshnessBadgeForShot
 } from '../domain/beanWorkflow';
 import { beanStockSummary } from '../domain/beanDisplay';
+import { formatShortDateTime } from '../domain/dateFormat';
 import { isDerekedShot } from '../domain/derekShot';
 import { isServiceShot } from '../domain/shotRecord';
 import { decentUploadFact, decentUploadLabel } from '../domain/shotUpload';
@@ -496,5 +497,5 @@ function round(value: number, digits: number): number {
 function shotDate(timestamp: string): string | null {
   const date = new Date(timestamp);
   if (Number.isNaN(date.valueOf())) return null;
-  return date.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return formatShortDateTime(date);
 }

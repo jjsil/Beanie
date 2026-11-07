@@ -7,6 +7,7 @@ import {
   latestBatch,
   storageStatusLabel
 } from './beanWorkflow';
+import { formatShortDate } from './dateFormat';
 
 export interface BeanStockSummary {
   bagCount: number;
@@ -53,7 +54,7 @@ export function batchOptionLabel(batch: BeanBatch): string {
   const roast = batch.roastDate ? new Date(batch.roastDate) : null;
   const roastText =
     roast && !Number.isNaN(roast.valueOf())
-      ? roast.toLocaleDateString([], { month: 'short', day: 'numeric' })
+      ? formatShortDate(roast)
       : 'Batch';
   const remaining = batch.weightRemaining != null ? ` · ${formatGrams(batch.weightRemaining)}` : '';
   return `${roastText}${remaining}`;
@@ -63,7 +64,7 @@ export function stockOptionLabel(batch: BeanBatch): string {
   const roast = batch.roastDate ? new Date(batch.roastDate) : null;
   const roastText =
     roast && !Number.isNaN(roast.valueOf())
-      ? roast.toLocaleDateString([], { month: 'short', day: 'numeric' })
+      ? formatShortDate(roast)
       : 'Undated stock';
   return `${roastText} · ${formatGrams(batch.weightRemaining)}`;
 }

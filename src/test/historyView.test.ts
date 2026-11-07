@@ -1,4 +1,5 @@
 import type { BeanBatch, ShotRecord } from '../api/types';
+import { withDateFormatContext } from '../domain/dateFormat';
 import { liveGhostReference, renderHistoryView, selectedHistoryShot } from '../views/historyView';
 
 run('history view hides service shots while keeping pagination based on raw shots', () => {
@@ -77,17 +78,19 @@ run('history view computes age for shots without stored freshness metadata', () 
     beanId: 'bean-1',
     roastDate: '2026-06-01T00:00:00.000Z'
   };
-  const html = renderHistoryView({
-    shots: [shot('shot-a', 'espresso', null, batch.id)],
-    detailShotId: 'shot-a',
-    compareShotId: null,
-    comparePicking: false,
-    demo: false,
-    shotsTotal: 1,
-    shotsLoadingMore: false,
-    secondTapHint: null,
-    batchesByBean: { [batch.beanId]: [batch] }
-  });
+  const html = withDateFormatContext({ locale: 'en-US', timeZone: 'UTC' }, () =>
+    renderHistoryView({
+      shots: [shot('shot-a', 'espresso', null, batch.id)],
+      detailShotId: 'shot-a',
+      compareShotId: null,
+      comparePicking: false,
+      demo: false,
+      shotsTotal: 1,
+      shotsLoadingMore: false,
+      secondTapHint: null,
+      batchesByBean: { [batch.beanId]: [batch] }
+    })
+  );
 
   includes(html, '4d · Profile shot-a · Jun 5');
 });
