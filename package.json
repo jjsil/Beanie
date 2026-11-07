@@ -1,6 +1,6 @@
 {
   "name": "beanie",
-  "version": "0.3.10-jj.1",
+  "version": "0.3.10-jj.2",
   "releaseTagSuffix": "jj",
   "private": true,
   "type": "module",
